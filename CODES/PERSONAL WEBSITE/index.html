@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta
+      name="description"
+      content="Daybook is a focused personal dashboard for planning, studying, spending, and keeping notes in one place."
+    />
+    <title>Daybook // Personal OS</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to workspace</a>
+
+    <!-- The boot state is hidden by default so the static shell is immediately useful. -->
+    <section
+      id="boot-screen"
+      class="screen screen--boot"
+      aria-labelledby="boot-title"
+      aria-live="polite"
+      hidden
+    >
+      <div class="boot-noise" aria-hidden="true"></div>
+      <div class="boot-frame">
+        <div class="boot-corner boot-corner--top">DAYBOOK / PERSONAL OS</div>
+        <div class="boot-corner boot-corner--bottom">SYSTEM 01 / LOCAL READY</div>
+        <div class="boot-mark" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p class="eyebrow eyebrow--light">INITIALIZING YOUR WORKSPACE</p>
+        <h1 id="boot-title" class="boot-title">
+          <span>MAKE</span>
+          <span>SPACE</span>
+          <span>FOR TODAY.</span>
+        </h1>
+        <div class="boot-progress" aria-hidden="true">
+          <span class="boot-progress__track"><span class="boot-progress__fill"></span></span>
+          <span class="boot-progress__value">/ / / 100%</span>
+        </div>
+        <p id="boot-status" class="boot-status" role="status">Loading local workspace...</p>
+      </div>
+    </section>
+
+    <!-- Auth state. app.js can remove the hidden attribute after a signed-out session. -->
+    <section
+      id="auth-screen"
+      class="screen screen--auth"
+      aria-labelledby="auth-title"
+      hidden
+    >
+      <div class="auth-grid" aria-hidden="true"></div>
+      <div class="auth-layout">
+        <div class="auth-intro">
+          <p class="eyebrow">PRIVATE WORKSPACE / 001</p>
+          <h1 id="auth-title" class="display-title display-title--auth">
+            YOUR DAY,<br /><span>BY DESIGN.</span>
+          </h1>
+          <p class="auth-lede">
+            A quiet, tactile command center for the things you want to remember,
+            finish, and make room for.
+          </p>
+          <div class="auth-stamp" aria-label="Product notes">
+            <span>PLAN</span><span>TRACK</span><span>MAKE</span>
+          </div>
+        </div>
+
+        <div class="auth-card panel panel--shadow">
+          <div class="panel-kicker">
+            <span>ACCESS POINT</span>
+            <span>01 / 01</span>
+          </div>
+          <h2 class="auth-card__title">WELCOME BACK.</h2>
+          <p class="auth-card__copy">Sign in to pick up where you left off.</p>
+
+          <form id="auth-form" class="stack-form" novalidate>
+            <label class="field" for="auth-email">
+              <span class="field__label">EMAIL ADDRESS</span>
+              <input
+                id="auth-email"
+                name="email"
+                type="email"
+                autocomplete="username"
+                inputmode="email"
+                placeholder="name@example.com"
+                required
+              />
+            </label>
+            <label class="field" for="auth-password">
+              <span class="field__label">PASSWORD</span>
+              <input
+                id="auth-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="••••••••••••"
+                required
+              />
+            </label>
+            <button class="button button--primary button--wide" type="submit">
+              ENTER WORKSPACE <span aria-hidden="true">↗</span>
+            </button>
+            <p id="auth-message" class="form-message" role="alert" aria-live="polite"></p>
+          </form>
+
+          <div class="rule-label"><span>OR</span></div>
+          <button id="guest-mode" class="button button--outline button--wide" type="button">
+            CONTINUE AS GUEST <span aria-hidden="true">→</span>
+          </button>
+          <p class="auth-footnote">Guest mode stores this workspace in your browser.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main application shell. -->
+    <div id="app-root" class="app-shell" data-current-view="overview" data-menu-open="false">
+      <aside id="sidebar" class="sidebar" aria-label="Primary navigation">
+        <div class="sidebar__top">
+          <a class="brand-lockup" href="#view-overview" aria-label="Daybook overview">
+            <span class="brand-mark" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="brand-copy">
+              <span class="brand-name">DAYBOOK</span>
+              <span class="brand-meta">PERSONAL OS / 01</span>
+            </span>
+          </a>
+
+          <div class="sidebar__section-label">WORKSPACE</div>
+          <nav id="main-nav" class="main-nav" aria-label="Workspace views">
+            <button class="nav-button is-active" type="button" data-view="overview" aria-current="page">
+              <span class="nav-button__index">01</span>
+              <span class="nav-button__label">Overview</span>
+              <span class="nav-button__shortcut" aria-hidden="true">G</span>
+            </button>
+            <button class="nav-button" type="button" data-view="planner">
+              <span class="nav-button__index">02</span>
+              <span class="nav-button__label">Planner</span>
+              <span class="nav-button__shortcut" aria-hidden="true">P</span>
+            </button>
+            <button class="nav-button" type="button" data-view="syllabus">
+              <span class="nav-button__index">03</span>
+              <span class="nav-button__label">Syllabus</span>
+              <span class="nav-button__shortcut" aria-hidden="true">S</span>
+            </button>
+            <button class="nav-button" type="button" data-view="spending">
+              <span class="nav-button__index">04</span>
+              <span class="nav-button__label">Spending</span>
+              <span class="nav-button__shortcut" aria-hidden="true">$</span>
+            </button>
+            <button class="nav-button" type="button" data-view="notes">
+              <span class="nav-button__index">05</span>
+              <span class="nav-button__label">Notes</span>
+              <span class="nav-button__shortcut" aria-hidden="true">N</span>
+            </button>
+             <button class="nav-button" type="button" data-view="links">
+               <span class="nav-button__index">06</span>
+               <span class="nav-button__label">Links</span>
+               <span class="nav-button__shortcut" aria-hidden="true">L</span>
+             </button>
+             <button class="nav-button" type="button" data-view="tuition">
+               <span class="nav-button__index">07</span>
+               <span class="nav-button__label">Tuition</span>
+               <span class="nav-button__shortcut" aria-hidden="true">T</span>
+             </button>
+             <button class="nav-button" type="button" data-view="settings">
+               <span class="nav-button__index">08</span>
+               <span class="nav-button__label">Settings</span>
+               <span class="nav-button__shortcut" aria-hidden="true">,</span>
+             </button>
+          </nav>
+        </div>
+
+        <div class="sidebar__bottom">
+          <div class="sidebar-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>
+              <span class="sidebar-status__label">SYNC STATUS</span>
+              <strong>LOCAL / READY</strong>
+            </span>
+          </div>
+          <button id="logout-btn" class="logout-button" type="button">
+            <span aria-hidden="true">↪</span> LOG OUT
+          </button>
+          <p class="sidebar-version">DAYBOOK V1.0.0<br />BUILT FOR THE IN-BETWEEN</p>
+        </div>
+      </aside>
+
+      <div class="app-content">
+        <header class="topbar">
+          <div class="topbar__mobile-brand">
+            <span class="brand-mark brand-mark--small" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="topbar__mobile-name">DAYBOOK</span>
+          </div>
+          <button
+            id="mobile-menu"
+            class="mobile-menu-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+          >
+            <span class="mobile-menu-button__lines" aria-hidden="true"><i></i><i></i></span>
+            <span>MENU</span>
+          </button>
+          <div class="topbar__meta">
+            <span class="topbar__mode"><span class="status-dot" aria-hidden="true"></span> OFFLINE-FIRST / LOCAL</span>
+            <span class="topbar__divider" aria-hidden="true"></span>
+            <div class="topbar__date">
+              <span id="today-date">THU // OCT 22, 2026</span>
+              <time id="clock" datetime="2026-10-22T09:41">09:41</time>
+            </div>
+          </div>
+        </header>
+
+        <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile workspace views" hidden>
+           <div class="mobile-nav__head">
+             <span class="eyebrow">JUMP TO</span>
+             <span class="mobile-nav__code">/ 08 VIEWS</span>
+           </div>
+           <div class="mobile-nav__grid">
+             <button class="nav-button is-active" type="button" data-view="overview" aria-current="page"><span>01</span><strong>Overview</strong></button>
+             <button class="nav-button" type="button" data-view="planner"><span>02</span><strong>Planner</strong></button>
+             <button class="nav-button" type="button" data-view="syllabus"><span>03</span><strong>Syllabus</strong></button>
+             <button class="nav-button" type="button" data-view="spending"><span>04</span><strong>Spending</strong></button>
+             <button class="nav-button" type="button" data-view="notes"><span>05</span><strong>Notes</strong></button>
+             <button class="nav-button" type="button" data-view="links"><span>06</span><strong>Links</strong></button>
+             <button class="nav-button" type="button" data-view="tuition"><span>07</span><strong>Tuition</strong></button>
+             <button class="nav-button" type="button" data-view="settings"><span>08</span><strong>Settings</strong></button>
+           </div>
+         </nav>
+
+        <main id="main-content" class="main-content" tabindex="-1">
+          <section id="view-overview" class="view view--active" data-view-panel="overview" aria-labelledby="overview-title">
+            <div class="page-heading">
+              <div>
+                <p class="eyebrow">THURSDAY / 22 OCTOBER 2026</p>
+                <h1 id="overview-title" class="display-title">OVERVIEW<span class="accent-mark">.</span></h1>
+                <p class="page-heading__lede">A clear surface for the day ahead.</p>
+              </div>
+              <div class="page-heading__aside">
+                <span class="page-heading__number">01</span>
+                <span class="page-heading__aside-label">YOUR PERSONAL<br />CONTROL ROOM</span>
+              </div>
+            </div>
+
+            <div class="overview-grid">
+              <article class="panel panel--hero overview-hero">
+                <div class="panel-kicker"><span>GOOD MORNING, FUAD</span><span>STATUS / PRESENT</span></div>
+                <div class="overview-hero__body">
+                  <div>
+                    <h2 class="hero-title">MAKE TODAY<br /><span>COUNT.</span></h2>
+                    <p class="hero-copy">Small, deliberate moves add up. Start with the next right thing.</p>
+                  </div>
+                  <div class="hero-signal" aria-label="Today's progress: 68 percent">
+                    <span class="hero-signal__value">68<span>%</span></span>
+                    <span class="hero-signal__label">DAY IN MOTION</span>
+                    <span class="hero-signal__bar"><i></i></span>
+                  </div>
+                </div>
+                <div class="hero-stamp" aria-hidden="true">STAY CURIOUS / KEEP GOING</div>
+              </article>
+
+              <article class="panel overview-focus">
+                <div class="panel-kicker"><span>FOCUS BLOCK</span><span>02 HRS</span></div>
+                <div class="focus-clock">09<span>:</span>30</div>
+                <p class="focus-task">Deep work / product brief</p>
+                <div class="focus-footer"><span class="accent-square" aria-hidden="true"></span><span>NEXT UP AT 11:30</span></div>
+              </article>
+
+              <article class="panel overview-tasks">
+                <div class="panel-kicker"><span>UP NEXT</span><a href="#view-planner" data-view="planner">VIEW ALL ↗</a></div>
+                <ul class="task-list" aria-label="Upcoming tasks">
+                  <li class="task-list__item"><span class="check-box" aria-hidden="true"></span><span><strong>Review lecture notes</strong><small>SYLLABUS / 10:00</small></span><span class="task-tag">TODAY</span></li>
+                  <li class="task-list__item"><span class="check-box" aria-hidden="true"></span><span><strong>Send project update</strong><small>WORK / 13:30</small></span><span class="task-tag task-tag--blue">HIGH</span></li>
+                  <li class="task-list__item task-list__item--done"><span class="check-box check-box--done" aria-hidden="true">✓</span><span><strong>Morning walk</strong><small>HEALTH / COMPLETE</small></span><span class="task-tag">DONE</span></li>
+                </ul>
+              </article>
+
+              <article class="panel stat-card stat-card--blue">
+                <span class="stat-card__index">A / 01</span>
+                <span class="stat-card__label">OPEN TASKS</span>
+                <strong class="stat-card__value">07</strong>
+                <span class="stat-card__foot">+2 FROM YESTERDAY</span>
+              </article>
+              <article class="panel stat-card">
+                <span class="stat-card__index">B / 02</span>
+                <span class="stat-card__label">WEEKLY SPEND</span>
+                <strong class="stat-card__value">৳184<span>.20</span></strong>
+                <span class="stat-card__foot">36% OF YOUR LIMIT</span>
+              </article>
+              <article class="panel stat-card stat-card--black">
+                <span class="stat-card__index">C / 03</span>
+                <span class="stat-card__label">NOTES CAPTURED</span>
+                <strong class="stat-card__value">12</strong>
+                <span class="stat-card__foot">THIS WEEK / +04</span>
+              </article>
+            </div>
+          </section>
+
+          <section id="view-planner" class="view" data-view-panel="planner" aria-labelledby="planner-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 02</p><h1 id="planner-title" class="display-title">PLANNER<span class="accent-mark">.</span></h1><p class="page-heading__lede">Turn a long list into a next step.</p></div>
+              <span class="page-heading__number">02</span>
+            </div>
+            <div class="content-grid content-grid--planner">
+              <article class="panel panel--shadow form-panel">
+                <div class="panel-kicker"><span>NEW TASK</span><span>ENTRY / 001</span></div>
+                <h2 class="panel-title">ADD TO THE BOARD.</h2>
+                <form id="task-form" class="stack-form" data-form="task">
+                  <label class="field" for="task-title"><span class="field__label">TASK NAME</span><input id="task-title" name="title" type="text" placeholder="What needs your attention?" required /></label>
+                  <div class="field-row">
+                    <label class="field" for="task-due"><span class="field__label">DUE DATE</span><input id="task-due" name="due" type="date" /></label>
+                    <label class="field" for="task-priority"><span class="field__label">PRIORITY</span><select id="task-priority" name="priority"><option value="normal">NORMAL</option><option value="high">HIGH</option><option value="low">LOW</option></select></label>
+                  </div>
+                  <label class="field" for="task-project"><span class="field__label">AREA / PROJECT</span><input id="task-project" name="project" type="text" placeholder="e.g. Studio, School, Home" /></label>
+                  <button id="add-task-btn" class="button button--primary" data-action="add-task" type="submit">ADD TASK <span aria-hidden="true">+</span></button>
+                </form>
+              </article>
+              <article class="panel list-panel">
+                <div class="panel-kicker"><span>ACTIVE QUEUE</span><span>07 OPEN</span></div>
+                <div class="empty-content" data-content="planner-list">
+                  <div class="empty-content__glyph" aria-hidden="true">↘</div>
+                  <h2>YOUR NEXT MOVES.</h2>
+                  <p>Tasks added through the form will land here, grouped by what matters now.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="view-syllabus" class="view" data-view-panel="syllabus" aria-labelledby="syllabus-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 03</p><h1 id="syllabus-title" class="display-title">SYLLABUS<span class="accent-mark">.</span></h1><p class="page-heading__lede">Keep the big picture close to the next deadline.</p></div>
+              <span class="page-heading__number">03</span>
+            </div>
+            <div class="syllabus-grid" data-content="syllabus-list">
+              <article class="panel course-card course-card--blue"><div class="panel-kicker"><span>COURSE / 01</span><span>72% COMPLETE</span></div><h2>DESIGN<br />SYSTEMS</h2><div class="progress-line"><i style="width:72%"></i></div><p>NEXT / READING RESPONSE · FRI 23</p></article>
+              <article class="panel course-card"><div class="panel-kicker"><span>COURSE / 02</span><span>48% COMPLETE</span></div><h2>HISTORY OF<br />MEDIA</h2><div class="progress-line"><i style="width:48%"></i></div><p>NEXT / SEMINAR NOTES · MON 26</p></article>
+              <article class="panel course-card"><div class="panel-kicker"><span>COURSE / 03</span><span>19% COMPLETE</span></div><h2>CREATIVE<br />CODING</h2><div class="progress-line"><i style="width:19%"></i></div><p>NEXT / STUDIO CHECK-IN · TUE 27</p></article>
+              <div class="empty-content empty-content--wide"><span class="empty-content__glyph" aria-hidden="true">+</span><h2>ADD A COURSE.</h2><p>Use this surface for reading lists, deadlines, and a little momentum.</p></div>
+            </div>
+          </section>
+
+          <section id="view-spending" class="view" data-view-panel="spending" aria-labelledby="spending-title" hidden>
+           <div class="page-heading">
+             <div><p class="eyebrow">WORKSPACE / 04</p><h1 id="spending-title" class="display-title">SPENDING<span class="accent-mark">.</span></h1><p class="page-heading__lede">A low-friction record of where it goes.</p></div>
+             <span class="page-heading__number">04</span>
+           </div>
+           <article class="panel panel--shadow spending-calendar-panel" aria-labelledby="spending-calendar-title">
+             <div class="panel-kicker"><span>CURRENT MONTH</span><span>CALENDAR / 01</span></div>
+             <div class="spending-calendar__head">
+               <div>
+                 <p class="eyebrow">MONTHLY SPEND MAP</p>
+                 <h2 id="spending-calendar-title" class="panel-title spending-calendar__title">TRACK THE FLOW.</h2>
+                 <p id="spending-month-label" class="spending-calendar__month">OCTOBER 2026</p>
+               </div>
+               <div class="spending-calendar__controls" aria-label="Calendar controls">
+                 <button class="spending-calendar__nav" type="button" data-action="spending-prev" aria-label="Previous month">←</button>
+                 <button class="spending-calendar__nav" type="button" data-action="spending-next" aria-label="Next month">→</button>
+                 <button class="button button--outline spending-calendar__export" type="button" data-action="export-month-pdf">EXPORT MONTH PDF <span aria-hidden="true">↗</span></button>
+               </div>
+             </div>
+             <div class="spending-calendar__weekdays" aria-hidden="true">
+               <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+             </div>
+             <div id="spending-calendar-grid" class="spending-calendar__grid" role="grid" aria-label="October 2026 spending calendar">
+               <span class="spending-calendar__day spending-calendar__day--empty" aria-hidden="true"></span>
+               <span class="spending-calendar__day spending-calendar__day--empty" aria-hidden="true"></span>
+               <span class="spending-calendar__day spending-calendar__day--empty" aria-hidden="true"></span>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-01" aria-label="October 1, 2026" aria-pressed="false"><span>1</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-02" aria-label="October 2, 2026" aria-pressed="false"><span>2</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-03" aria-label="October 3, 2026" aria-pressed="false"><span>3</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-04" aria-label="October 4, 2026" aria-pressed="false"><span>4</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-05" aria-label="October 5, 2026" aria-pressed="false"><span>5</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-06" aria-label="October 6, 2026" aria-pressed="false"><span>6</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-07" aria-label="October 7, 2026" aria-pressed="false"><span>7</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-08" aria-label="October 8, 2026" aria-pressed="false"><span>8</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-09" aria-label="October 9, 2026" aria-pressed="false"><span>9</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-10" aria-label="October 10, 2026" aria-pressed="false"><span>10</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-11" aria-label="October 11, 2026" aria-pressed="false"><span>11</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-12" aria-label="October 12, 2026" aria-pressed="false"><span>12</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-13" aria-label="October 13, 2026" aria-pressed="false"><span>13</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-14" aria-label="October 14, 2026" aria-pressed="false"><span>14</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-15" aria-label="October 15, 2026" aria-pressed="false"><span>15</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-16" aria-label="October 16, 2026" aria-pressed="false"><span>16</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-17" aria-label="October 17, 2026" aria-pressed="false"><span>17</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-18" aria-label="October 18, 2026" aria-pressed="false"><span>18</span></button>
+               <button class="spending-calendar__day spending-calendar__day--has-spend" type="button" role="gridcell" data-spending-date="2026-10-19" aria-label="October 19, 2026, 6 dollars and 40 cents spent" aria-pressed="false"><span>19</span><small>৳6.40</small></button>
+               <button class="spending-calendar__day spending-calendar__day--has-spend" type="button" role="gridcell" data-spending-date="2026-10-20" aria-label="October 20, 2026, 24 dollars spent" aria-pressed="false"><span>20</span><small>৳24.00</small></button>
+               <button class="spending-calendar__day spending-calendar__day--has-spend" type="button" role="gridcell" data-spending-date="2026-10-21" aria-label="October 21, 2026, 42 dollars and 80 cents spent" aria-pressed="false"><span>21</span><small>৳42.80</small></button>
+               <button class="spending-calendar__day is-selected" type="button" role="gridcell" data-spending-date="2026-10-22" aria-label="October 22, 2026" aria-pressed="true"><span>22</span><small>SELECTED</small></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-23" aria-label="October 23, 2026" aria-pressed="false"><span>23</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-24" aria-label="October 24, 2026" aria-pressed="false"><span>24</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-25" aria-label="October 25, 2026" aria-pressed="false"><span>25</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-26" aria-label="October 26, 2026" aria-pressed="false"><span>26</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-27" aria-label="October 27, 2026" aria-pressed="false"><span>27</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-28" aria-label="October 28, 2026" aria-pressed="false"><span>28</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-29" aria-label="October 29, 2026" aria-pressed="false"><span>29</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-30" aria-label="October 30, 2026" aria-pressed="false"><span>30</span></button>
+               <button class="spending-calendar__day" type="button" role="gridcell" data-spending-date="2026-10-31" aria-label="October 31, 2026" aria-pressed="false"><span>31</span></button>
+               <span class="spending-calendar__day spending-calendar__day--empty" aria-hidden="true"></span>
+             </div>
+             <div class="spending-calendar__summary" aria-label="Selected spending day summary">
+               <div class="spending-calendar__summary-card"><span>SELECTED DAY</span><strong id="spending-selected-day-label">THU / OCT 22, 2026</strong></div>
+               <div class="spending-calendar__summary-card"><span>TOTAL</span><strong id="spending-selected-day-total">৳0.00</strong></div>
+               <div class="spending-calendar__summary-card"><span>ENTRIES</span><strong id="spending-selected-day-count">0</strong></div>
+             </div>
+           </article>
+           <div class="content-grid content-grid--spending">
+             <article class="panel panel--black budget-panel"><div class="panel-kicker"><span>OCTOBER LIMIT</span><span>36% USED</span></div><strong class="budget-value">৳184<span>.20</span></strong><div class="budget-bar"><i style="width:36%"></i></div><div class="budget-meta"><span>৳500 MONTHLY</span><span>৳315.80 LEFT</span></div></article>
+              <article class="panel form-panel"><div class="panel-kicker"><span>NEW EXPENSE</span><span>ENTRY / 002</span></div><h2 class="panel-title">LOG A PURCHASE.</h2><form id="expense-form" class="stack-form" data-form="expense"><label class="field" for="expense-label"><span class="field__label">DESCRIPTION</span><input id="expense-label" name="label" type="text" placeholder="What did you buy?" required /></label><div class="field-row"><label class="field" for="expense-amount"><span class="field__label">AMOUNT</span><input id="expense-amount" name="amount" type="number" min="0" step="0.01" placeholder="0.00" required /></label><label class="field" for="expense-category"><span class="field__label">CATEGORY</span><select id="expense-category" name="category"><option value="everyday">EVERYDAY</option><option value="food">FOOD</option><option value="travel">TRAVEL</option><option value="school">SCHOOL</option></select></label></div><button id="add-expense-btn" class="button button--primary" data-action="add-expense" type="submit">LOG EXPENSE <span aria-hidden="true">+</span></button></form></article>
+               <article class="panel list-panel spending-list"><div class="panel-kicker"><span>RECENT ACTIVITY</span><a href="#view-spending">EXPORT ↗</a></div><ul class="ledger-list" data-content="spending-list"><li><span class="ledger-date">OCT 21</span><strong>GROCERY RUN</strong><span class="ledger-category">EVERYDAY</span><b>− ৳42.80</b></li><li><span class="ledger-date">OCT 20</span><strong>TRAIN PASS</strong><span class="ledger-category">TRAVEL</span><b>− ৳24.00</b></li><li><span class="ledger-date">OCT 19</span><strong>COFFEE / STUDIO</strong><span class="ledger-category">EVERYDAY</span><b>− ৳6.40</b></li></ul></article>
+            </div>
+          </section>
+
+          <section id="view-notes" class="view" data-view-panel="notes" aria-labelledby="notes-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 05</p><h1 id="notes-title" class="display-title">NOTES<span class="accent-mark">.</span></h1><p class="page-heading__lede">Catch the thought before it disappears.</p></div>
+              <span class="page-heading__number">05</span>
+            </div>
+            <div class="content-grid content-grid--notes">
+              <article class="panel panel--shadow form-panel"><div class="panel-kicker"><span>QUICK CAPTURE</span><span>ENTRY / 003</span></div><h2 class="panel-title">MAKE A NOTE.</h2><form id="note-form" class="stack-form" data-form="note"><label class="field" for="note-title"><span class="field__label">TITLE</span><input id="note-title" name="title" type="text" placeholder="A small headline" required /></label><label class="field" for="note-content"><span class="field__label">NOTE</span><textarea id="note-content" name="content" rows="6" placeholder="Write it down..." required></textarea></label><div class="field-row"><label class="field" for="note-tag"><span class="field__label">TAG</span><input id="note-tag" name="tag" type="text" placeholder="idea, quote, reminder" /></label><button id="add-note-btn" class="button button--primary field-row__button" data-action="add-note" type="submit">SAVE NOTE <span aria-hidden="true">+</span></button></div></form></article>
+              <article class="panel notes-board"><div class="panel-kicker"><span>RECENT NOTES</span><span>12 THIS WEEK</span></div><div class="note-stack" data-content="notes-list"><article class="note-card note-card--blue"><span class="note-card__date">OCT 22 / 09:05</span><h2>Make the system smaller.</h2><p>Reduce the friction between knowing and doing.</p><span class="note-card__tag">IDEA</span></article><article class="note-card"><span class="note-card__date">OCT 21 / 17:42</span><h2>Read more slowly.</h2><p>Leave room for the line that changes the shape of the day.</p><span class="note-card__tag">REMINDER</span></article></div></article>
+            </div>
+          </section>
+
+          <section id="view-links" class="view" data-view-panel="links" aria-labelledby="links-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 06</p><h1 id="links-title" class="display-title">LINKS<span class="accent-mark">.</span></h1><p class="page-heading__lede">Keep the good references within reach.</p></div>
+              <span class="page-heading__number">06</span>
+            </div>
+           <div class="content-grid content-grid--links">
+             <article class="panel form-panel"><div class="panel-kicker"><span>NEW REFERENCE</span><span>ENTRY / 004</span></div><h2 class="panel-title">PIN A LINK.</h2><form id="link-form" class="stack-form" data-form="link"><label class="field" for="link-label"><span class="field__label">NAME</span><input id="link-label" name="label" type="text" placeholder="What should future-you find?" required /></label><label class="field" for="link-url"><span class="field__label">URL</span><input id="link-url" name="url" type="url" placeholder="https://" required /></label><label class="field" for="link-category"><span class="field__label">COLLECTION</span><select id="link-category" name="category"><option value="read">READ</option><option value="watch">WATCH</option><option value="make">MAKE</option><option value="reference">REFERENCE</option></select></label><button id="add-link-btn" class="button button--primary" data-action="add-link" type="submit">SAVE LINK <span aria-hidden="true">+</span></button></form></article>
+             <article class="panel links-board"><div class="panel-kicker"><span>PINNED REFERENCES</span><span>18 SAVED</span></div><div class="link-list" data-content="links-list"><a class="link-row" href="#link-1"><span class="link-row__icon" aria-hidden="true">↗</span><span><strong>Are.na / visual research</strong><small>REFERENCE · ARE.NA</small></span><span class="link-row__arrow" aria-hidden="true">→</span></a><a class="link-row" href="#link-2"><span class="link-row__icon" aria-hidden="true">↗</span><span><strong>The Creative Independent</strong><small>READ · THECREATIVEINDEPENDENT.COM</small></span><span class="link-row__arrow" aria-hidden="true">→</span></a><a class="link-row" href="#link-3"><span class="link-row__icon" aria-hidden="true">↗</span><span><strong>Typewolf / type notes</strong><small>REFERENCE · TYPEWOLF.COM</small></span><span class="link-row__arrow" aria-hidden="true">→</span></a></div></article>
+           </div>
+          </section>
+
+          <section id="view-tuition" class="view" data-view-panel="tuition" aria-labelledby="tuition-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 07</p><h1 id="tuition-title" class="display-title">TUITION<span class="accent-mark">.</span></h1><p class="page-heading__lede">Keep promising teaching leads close and clear.</p></div>
+              <span class="page-heading__number">07</span>
+            </div>
+            <div class="content-grid content-grid--tuition">
+              <article class="panel panel--shadow form-panel tuition-form-panel">
+                <div class="panel-kicker"><span>NEW TUITION LEAD</span><span>ENTRY / 005</span></div>
+                <h2 class="panel-title">FIND A MATCH.</h2>
+                <form id="tuition-form" class="stack-form" novalidate>
+                  <label class="field" for="tuition-name"><span class="field__label">STUDENT / CONTACT NAME</span><input id="tuition-name" name="name" type="text" placeholder="Who should you follow up with?" required /></label>
+                  <div class="field-row">
+                    <label class="field" for="tuition-salary"><span class="field__label">EXPECTED SALARY</span><input id="tuition-salary" name="salary" type="number" min="0" step="1" placeholder="6000" /></label>
+                    <label class="field" for="tuition-phone"><span class="field__label">PHONE NUMBER</span><input id="tuition-phone" name="phone" type="tel" inputmode="tel" placeholder="+880 1•••••••••" /></label>
+                  </div>
+                  <label class="field" for="tuition-address"><span class="field__label">ADDRESS</span><input id="tuition-address" name="address" type="text" placeholder="Area, road, or meeting point" /></label>
+                  <label class="field" for="tuition-subject"><span class="field__label">SUBJECT / LEVEL</span><input id="tuition-subject" name="subject" type="text" placeholder="e.g. Math / Class VIII" /></label>
+                  <label class="field" for="tuition-notes"><span class="field__label">NOTES</span><textarea id="tuition-notes" name="notes" rows="4" placeholder="Schedule, requirements, or follow-up notes"></textarea></label>
+                  <button id="add-tuition-btn" class="button button--primary" type="submit">ADD TUITION <span aria-hidden="true">+</span></button>
+                </form>
+              </article>
+              <article class="panel list-panel tuition-board">
+                <div class="panel-kicker"><span>TUITION LIST</span><span>OPEN LEADS</span></div>
+                <div class="tuition-list" data-content="tuition-list">
+                  <article class="tuition-card tuition-card--blue">
+                    <div class="tuition-card__top"><span>LEAD / 01</span><span>NEW</span></div>
+                    <h2>PRIVATE MATH</h2>
+                    <p class="tuition-card__subject">CLASS VIII / ALGEBRA + GEOMETRY</p>
+                    <dl class="tuition-card__details">
+                      <div><dt>CONTACT</dt><dd>Rafi's family</dd></div>
+                      <div><dt>AREA</dt><dd>Uttara / Sector 7</dd></div>
+                      <div><dt>PHONE</dt><dd>+880 17•••••••</dd></div>
+                      <div><dt>RATE</dt><dd>৳6,000 / MONTH</dd></div>
+                    </dl>
+                    <div class="tuition-card__footer"><button class="tuition-card__check" type="button" aria-label="Mark private math tuition lead as checked"><span aria-hidden="true">✓</span> CHECKED</button><span class="tuition-card__note">CALL AFTER 18:00</span></div>
+                  </article>
+                  <article class="tuition-card">
+                    <div class="tuition-card__top"><span>LEAD / 02</span><span>FOLLOW UP</span></div>
+                    <h2>ENGLISH SUPPORT</h2>
+                    <p class="tuition-card__subject">CLASS VI / READING + WRITING</p>
+                    <dl class="tuition-card__details">
+                      <div><dt>CONTACT</dt><dd>Parent referral</dd></div>
+                      <div><dt>AREA</dt><dd>Dhanmondi / Road 4</dd></div>
+                      <div><dt>PHONE</dt><dd>+880 18•••••••</dd></div>
+                      <div><dt>RATE</dt><dd>৳4,500 / MONTH</dd></div>
+                    </dl>
+                    <div class="tuition-card__footer"><button class="tuition-card__check" type="button" aria-label="Mark English support tuition lead as checked"><span aria-hidden="true">✓</span> CHECKED</button><span class="tuition-card__note">CONFIRM WEEKEND SLOT</span></div>
+                  </article>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="view-settings" class="view" data-view-panel="settings" aria-labelledby="settings-title" hidden>
+            <div class="page-heading">
+              <div><p class="eyebrow">WORKSPACE / 08</p><h1 id="settings-title" class="display-title">SETTINGS<span class="accent-mark">.</span></h1><p class="page-heading__lede">Shape the system around how you work.</p></div>
+              <span class="page-heading__number">08</span>
+            </div>
+            <div class="settings-grid" data-content="settings-list">
+              <article class="panel settings-card"><div class="panel-kicker"><span>PROFILE</span><span>01 / 04</span></div><div class="settings-card__row"><span class="avatar">F</span><span><strong>Fuad</strong><small>Sign in for cloud sync</small></span><button class="button button--small button--outline" type="button" data-action="edit-profile">EDIT</button></div></article>
+              <article class="panel settings-card settings-card--appearance"><div class="panel-kicker"><span>APPEARANCE</span><span>02 / 04</span></div><div class="settings-card__row"><span><strong>Color mode</strong><small>Black, white, and a little electric.</small></span><button class="toggle is-on" type="button" role="switch" aria-checked="true" data-setting="accent-mode"><span></span><span class="sr-only">Toggle accent color</span></button></div><div class="theme-picker-row"><span><strong>Workspace theme</strong><small>Choose a paper or dark surface.</small></span><div class="theme-picker" role="group" aria-label="Workspace theme"><button class="theme-picker__button is-selected" type="button" data-theme-choice="light" aria-pressed="true">LIGHT</button><button class="theme-picker__button" type="button" data-theme-choice="dark" aria-pressed="false">DARK</button></div></div></article>
+              <article class="panel settings-card"><div class="panel-kicker"><span>REMINDERS</span><span>03 / 04</span></div><div class="settings-card__row"><span><strong>Daily check-in</strong><small>Prompt me at 08:30 on weekdays.</small></span><button class="toggle is-on" type="button" role="switch" aria-checked="true" data-setting="daily-checkin"><span></span><span class="sr-only">Toggle daily check-in</span></button></div></article>
+              <article class="panel settings-card settings-card--accent"><div class="panel-kicker"><span>DATA</span><span>04 / 04</span></div><h2>YOUR SPACE,<br />YOUR RECORD.</h2><p>Export a portable copy of your Daybook whenever you need it.</p><button class="button button--dark" type="button" data-action="export-data">EXPORT DATA <span aria-hidden="true">↗</span></button></article>
+            </div>
+          </section>
+        </main>
+
+        <div id="toast" class="toast" role="status" aria-live="polite" hidden>
+          <span class="toast__mark" aria-hidden="true">✓</span>
+          <span class="toast__message">Saved to your Daybook.</span>
+          <button class="toast__close" type="button" aria-label="Dismiss notification">×</button>
+        </div>
+      </div>
+    </div>
+    <script src="variables.js"></script>
+    <script src="study-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
